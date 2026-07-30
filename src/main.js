@@ -1,4 +1,4 @@
-import { BootScene } from './scenes/BootScene.js';
+import BootScene from './scenes/BootScene.js';
 
 const GAME_WIDTH = 400;
 const GAME_HEIGHT = 640;
