@@ -6,14 +6,14 @@
     name="viewport"
     content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
   >
-  <meta name="theme-color" content="#08120f">
+  <meta name="theme-color" content="#040b09">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>Emerald Quest</title>
   <style>
     :root {
       color-scheme: dark;
-      background: #08120f;
+      background: #040b09;
     }
 
     * {
@@ -28,8 +28,8 @@
       margin: 0;
       overflow: hidden;
       overscroll-behavior: none;
-      background: #08120f;
-      font-family: Arial, sans-serif;
+      background: #040b09;
+      font-family: "Trebuchet MS", Arial, sans-serif;
     }
 
     body {
@@ -53,21 +53,92 @@
       touch-action: none;
     }
 
-    #loading {
+    #loading,
+    #rotate-device {
       position: fixed;
       inset: 0;
-      display: grid;
+      z-index: 20;
       place-items: center;
-      z-index: 10;
+      text-align: center;
+      background: #040b09;
+    }
+
+    #loading {
+      display: grid;
       color: #ffe59a;
-      background: #08120f;
       font-weight: 700;
       letter-spacing: 0.08em;
+    }
+
+    #rotate-device {
+      display: none;
+      padding: 32px;
+      background:
+        radial-gradient(circle at 50% 45%, rgba(45, 118, 84, 0.3), transparent 44%),
+        #040b09;
+    }
+
+    #rotate-device .panel {
+      width: min(360px, 92vw);
+      padding: 28px 24px;
+      color: #e9f2ed;
+      border: 2px solid #a8752d;
+      border-radius: 12px;
+      background: #101f19;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.55);
+    }
+
+    #rotate-device .icon {
+      display: block;
+      margin-bottom: 12px;
+      color: #73edbd;
+      font-size: 48px;
+      line-height: 1;
+    }
+
+    #rotate-device strong {
+      display: block;
+      margin-bottom: 9px;
+      color: #f4d487;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 24px;
+    }
+
+    #rotate-device p {
+      margin: 0 0 18px;
+      color: #bcd0c7;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    #play-portrait {
+      min-height: 42px;
+      padding: 10px 18px;
+      color: #201304;
+      border: 1px solid #ffe6a1;
+      border-radius: 6px;
+      background: #e3b54f;
+      font: 700 13px "Trebuchet MS", Arial, sans-serif;
+      cursor: pointer;
+    }
+
+    @media (orientation: portrait) and (max-width: 720px) {
+      #rotate-device:not([hidden]) {
+        display: grid;
+      }
     }
   </style>
 </head>
 <body>
   <div id="loading" role="status" aria-live="polite">OPENING EMERALD QUEST…</div>
+  <div id="rotate-device" role="dialog" aria-label="Landscape orientation recommendation">
+    <div class="panel">
+      <span class="icon" aria-hidden="true">↻</span>
+      <strong>Rotate for the full temple</strong>
+      <p>Emerald Quest now uses a cinematic landscape layout with a larger chamber, HUD and mobile controls.</p>
+      <button id="play-portrait" type="button">PLAY ANYWAY</button>
+    </div>
+  </div>
   <main id="game" aria-label="Emerald Quest game"></main>
 
   <script src="https://cdn.jsdelivr.net/npm/phaser@3.90.0/dist/phaser.min.js"></script>
@@ -75,7 +146,21 @@
   <script type="module" src="./src/main.js"></script>
   <script type="module" src="./src/visual/ProductionPipeline.js"></script>
   <script type="module" src="./src/feel/GameFeel.js"></script>
+  <script type="module" src="./src/visual/LandscapeSlice.js"></script>
   <script>
+    const rotatePrompt = document.getElementById('rotate-device');
+    const playPortrait = document.getElementById('play-portrait');
+
+    playPortrait?.addEventListener('click', () => {
+      rotatePrompt?.setAttribute('hidden', '');
+    });
+
+    window.addEventListener('orientationchange', () => {
+      if (window.matchMedia('(orientation: landscape)').matches) {
+        rotatePrompt?.setAttribute('hidden', '');
+      }
+    });
+
     window.addEventListener('load', () => {
       window.setTimeout(() => {
         const loading = document.getElementById('loading');
