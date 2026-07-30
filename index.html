@@ -1,91 +1,84 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<meta name="theme-color" content="#10261e">
-<title>Temple Quest</title>
-<style>
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;width:100%;height:100%;overflow:hidden;overscroll-behavior:none;background:#08120f;font-family:Arial,sans-serif}#game{width:100%;height:100%;display:flex;align-items:center;justify-content:center}canvas{display:block;touch-action:none}#loading{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;color:#ffe591;background:#08120f;font-weight:700;letter-spacing:1px;z-index:3}
-</style>
+  <meta charset="utf-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+  >
+  <meta name="theme-color" content="#08120f">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Emerald Quest</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      background: #08120f;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      overscroll-behavior: none;
+      background: #08120f;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      min-height: 100dvh;
+      padding-top: env(safe-area-inset-top);
+      padding-right: env(safe-area-inset-right);
+      padding-bottom: env(safe-area-inset-bottom);
+      padding-left: env(safe-area-inset-left);
+    }
+
+    #game {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    canvas {
+      display: block;
+      touch-action: none;
+    }
+
+    #loading {
+      position: fixed;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      z-index: 10;
+      color: #ffe59a;
+      background: #08120f;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+    }
+  </style>
 </head>
 <body>
-<div id="loading">OPENING THE TEMPLE…</div>
-<div id="game"></div>
-<script src="https://cdn.jsdelivr.net/npm/phaser@3.90.0/dist/phaser.min.js"></script>
-<script>
-const COLS=10,ROWS=12,TILE=40,TOP=118;
-const LEVEL=[
-'##########',
-'#P..#...G#',
-'#.#.#.##.#',
-'#.#..R...#',
-'#.###.##.#',
-'#G....#..#',
-'###.#.#G.#',
-'#...#....#',
-'#.R....#K#',
-'#...##...#',
-'#......#E#',
-'##########'];
-class TempleScene extends Phaser.Scene{
- constructor(){super('Temple')}
- create(){
-  document.getElementById('loading').style.display='none';
-  this.cameras.main.setBackgroundColor('#10261e');
-  this.makeTextures();
-  this.map=LEVEL.map(r=>r.split(''));this.gems=0;this.total=0;this.moves=0;this.hasKey=false;this.busy=false;
-  for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++){if(this.map[r][c]==='P'){this.player={r,c};this.map[r][c]='.'}if(this.map[r][c]==='G')this.total++}
-  this.drawBackground();this.drawHud();this.drawBoard();this.bindInput();this.updateHud('Swipe or tap a neighbouring tile to move.');
- }
- makeTextures(){
-  const g=this.add.graphics();
-  g.fillStyle(0x2c4536).fillRoundedRect(0,0,40,40,4).lineStyle(2,0x51715c).strokeRoundedRect(1,1,38,38,4);g.lineStyle(1,0x1b2b22).strokeRect(5,5,30,30);g.generateTexture('wall',40,40);g.clear();
-  g.fillStyle(0x163329).fillRect(0,0,40,40);g.fillStyle(0x20483a).fillRect(2,2,36,36);g.lineStyle(1,0x2c5b49,0.7).strokeRect(4,4,32,32);g.fillStyle(0x305d49,0.35).fillCircle(10,11,2).fillCircle(30,27,2);g.generateTexture('floor',40,40);g.clear();
-  g.fillStyle(0x183c2f).fillRect(0,0,40,40);g.fillStyle(0x2e6c50).fillCircle(8,6,5).fillCircle(31,8,6).fillCircle(35,31,5).fillCircle(5,33,5);g.generateTexture('moss',40,40);g.clear();
-  g.fillStyle(0x6b5f55).fillCircle(20,20,15);g.fillStyle(0x94877c).fillCircle(15,14,7);g.fillStyle(0x4a413c).fillCircle(26,25,6);g.lineStyle(2,0x2c2724).strokeCircle(20,20,15);g.generateTexture('rock',40,40);g.clear();
-  g.fillStyle(0x59eaff).fillTriangle(20,3,35,14,28,36).fillTriangle(20,3,5,14,12,36);g.fillStyle(0xd8ffff,0.8).fillTriangle(20,5,15,16,23,15);g.lineStyle(2,0x0878a5).strokeTriangle(20,3,35,14,28,36).strokeTriangle(20,3,5,14,12,36);g.generateTexture('gem',40,40);g.clear();
-  g.fillStyle(0xe8bf4f).fillCircle(13,20,7).fillRect(18,17,17,6);g.fillStyle(0x8c5a14).fillCircle(13,20,3).fillRect(28,21,4,7);g.generateTexture('key',40,40);g.clear();
-  g.fillStyle(0x6e3d20).fillRoundedRect(7,4,26,34,12).fillStyle(0xbc7136).fillRoundedRect(11,8,18,30,8);g.lineStyle(2,0x2a160d).strokeRoundedRect(7,4,26,34,12);g.fillStyle(0xf7d46a).fillCircle(25,23,2);g.generateTexture('door',40,40);g.clear();
-  g.fillStyle(0xd9a05d).fillCircle(20,15,7);g.fillStyle(0x76502b).fillEllipse(20,8,24,8).fillRoundedRect(14,20,12,15,4);g.fillStyle(0x2d2341).fillRect(14,32,5,7).fillRect(22,32,5,7);g.fillStyle(0xe5c06d).fillEllipse(20,5,17,7);g.generateTexture('hero',40,40);g.clear();
-  g.fillStyle(0xffd85c).fillCircle(4,4,4);g.generateTexture('spark',8,8);g.destroy();
- }
- drawBackground(){
-  this.add.rectangle(200,320,400,640,0x10261e);for(let i=0;i<18;i++){this.add.circle(Phaser.Math.Between(0,400),Phaser.Math.Between(0,640),Phaser.Math.Between(12,40),0x1e4a39,0.18)}
-  this.add.rectangle(200,67,380,92,0x173c30,0.98).setStrokeStyle(3,0xc5903d);this.add.text(200,25,'TEMPLE QUEST',{fontFamily:'Arial',fontSize:'24px',fontStyle:'bold',color:'#ffe9a6'}).setOrigin(.5);this.add.text(200,50,'THE SUNKEN TEMPLE • LEVEL 1',{fontFamily:'Arial',fontSize:'11px',color:'#c9e2d1'}).setOrigin(.5);
- }
- drawHud(){
-  this.hud=[];const labels=['◆ 0/'+this.total,'KEY 0/1','MOVES 0','♥♥♥'];const xs=[55,145,245,345];for(let i=0;i<4;i++){this.add.rectangle(xs[i],88,82,34,0x203f35).setStrokeStyle(2,0xb4863e);this.hud.push(this.add.text(xs[i],88,labels[i],{fontFamily:'Arial',fontSize:i===3?'16px':'12px',fontStyle:'bold',color:i===3?'#ff6872':'#fff0b5'}).setOrigin(.5))}
-  this.message=this.add.text(200,620,'',{fontFamily:'Arial',fontSize:'12px',color:'#e8e0bf',align:'center',wordWrap:{width:360}}).setOrigin(.5);
-  const restart=this.add.text(374,18,'↻',{fontFamily:'Arial',fontSize:'25px',fontStyle:'bold',color:'#ffe591',backgroundColor:'#27483b',padding:{x:8,y:4}}).setOrigin(1,0).setInteractive({useHandCursor:true});restart.on('pointerdown',()=>this.scene.restart());
- }
- drawBoard(){
-  this.boardContainer=this.add.container(0,TOP);this.tiles=[];this.entities=new Map();
-  for(let r=0;r<ROWS;r++){for(let c=0;c<COLS;c++){const x=c*TILE+20,y=r*TILE+20,v=this.map[r][c];const base=this.add.image(x,y,v==='#'?'wall':'floor');if(v==='#'&&((r+c)%3===0))this.add.image(x,y,'moss').setAlpha(.35);this.boardContainer.add(base);if(v!=='#'){base.setInteractive();base.setData({r,c});base.on('pointerdown',()=>this.tapTile(r,c))}if(v==='G')this.addEntity(r,c,'gem');if(v==='R')this.addEntity(r,c,'rock');if(v==='K')this.addEntity(r,c,'key');if(v==='E')this.addEntity(r,c,'door')}}
-  this.hero=this.add.image(this.player.c*TILE+20,this.player.r*TILE+20,'hero').setDepth(8);this.boardContainer.add(this.hero);this.tweens.add({targets:this.hero,y:'-=2',duration:450,yoyo:true,repeat:-1,ease:'Sine.easeInOut'});
- }
- addEntity(r,c,key){const s=this.add.image(c*TILE+20,r*TILE+20,key).setDepth(5);if(key==='gem')this.tweens.add({targets:s,scale:1.12,duration:550,yoyo:true,repeat:-1,ease:'Sine.easeInOut'});if(key==='door')s.setTint(0x777777);this.entities.set(r+','+c,s);this.boardContainer.add(s)}
- bindInput(){
-  this.input.on('pointerdown',p=>{this.start={x:p.x,y:p.y}});this.input.on('pointerup',p=>{if(!this.start||this.busy)return;const dx=p.x-this.start.x,dy=p.y-this.start.y;this.start=null;if(Math.max(Math.abs(dx),Math.abs(dy))<24)return;if(Math.abs(dx)>Math.abs(dy))this.move(0,dx>0?1:-1);else this.move(dy>0?1:-1,0)});
-  this.input.keyboard.on('keydown',e=>{const k={ArrowUp:[-1,0],ArrowDown:[1,0],ArrowLeft:[0,-1],ArrowRight:[0,1]}[e.key];if(k)this.move(...k)})
- }
- tapTile(r,c){const dr=r-this.player.r,dc=c-this.player.c;if(Math.abs(dr)+Math.abs(dc)===1)this.move(dr,dc)}
- updateHud(msg){this.hud[0].setText('◆ '+this.gems+'/'+this.total);this.hud[1].setText('KEY '+(this.hasKey?'1':'0')+'/1');this.hud[2].setText('MOVES '+this.moves);if(msg)this.message.setText(msg)}
- move(dr,dc){
-  if(this.busy)return;const nr=this.player.r+dr,nc=this.player.c+dc,target=this.map[nr]?.[nc];if(target===undefined||target==='#'){this.cameras.main.shake(70,.002);return}
-  if(target==='R'){const rr=nr+dr,rc=nc+dc;if(dr!==0||this.map[rr]?.[rc]!=='.'){this.updateHud('That boulder will not move.');return}const rock=this.entities.get(nr+','+nc);this.entities.delete(nr+','+nc);this.entities.set(rr+','+rc,rock);this.map[rr][rc]='R';this.map[nr][nc]='.';this.tweens.add({targets:rock,x:rc*TILE+20,duration:130,ease:'Quad.easeOut'})}
-  if(target==='E'&&(!this.hasKey||this.gems<this.total)){this.updateHud('The gate needs the key and every crystal.');this.cameras.main.shake(90,.002);return}
-  this.busy=true;this.moves++;this.player={r:nr,c:nc};this.tweens.add({targets:this.hero,x:nc*TILE+20,y:nr*TILE+20,duration:135,ease:'Quad.easeOut',onComplete:()=>{this.busy=false;this.land(target,nr,nc)}})
- }
- land(target,r,c){
-  if(target==='G'){this.map[r][c]='.';this.gems++;const s=this.entities.get(r+','+c);this.entities.delete(r+','+c);this.burst(s.x,s.y);s.destroy();this.updateHud(this.gems===this.total?'All crystals found. Now find the key!':'Crystal collected!')}
-  else if(target==='K'){this.map[r][c]='.';this.hasKey=true;const s=this.entities.get(r+','+c);this.entities.delete(r+','+c);s.destroy();const door=[...this.entities.values()].find(x=>x.texture.key==='door');if(door)door.clearTint();this.updateHud(this.gems===this.total?'The exit gate is open!':'Key found. Collect the remaining crystals.')}
-  else if(target==='E'&&this.hasKey&&this.gems===this.total){this.win();return}else this.updateHud();
- }
- burst(x,y){const p=this.add.particles(x,y,'spark',{speed:{min:30,max:90},lifespan:450,quantity:14,scale:{start:1,end:0},gravityY:80});this.boardContainer.add(p);this.time.delayedCall(500,()=>p.destroy())}
- win(){this.busy=true;this.cameras.main.flash(350,255,220,90);const panel=this.add.rectangle(200,320,330,190,0x183a2f,.97).setStrokeStyle(4,0xe4b95c).setDepth(20);this.add.text(200,274,'CHAMBER CLEARED!',{fontFamily:'Arial',fontSize:'25px',fontStyle:'bold',color:'#ffe7a0'}).setOrigin(.5).setDepth(21);this.add.text(200,315,'You escaped in '+this.moves+' moves.',{fontFamily:'Arial',fontSize:'15px',color:'#e7f3e9'}).setOrigin(.5).setDepth(21);const b=this.add.text(200,360,'PLAY AGAIN',{fontFamily:'Arial',fontSize:'16px',fontStyle:'bold',color:'#3b2708',backgroundColor:'#f0c75e',padding:{x:18,y:10}}).setOrigin(.5).setDepth(21).setInteractive();b.on('pointerdown',()=>this.scene.restart())}
-}
-new Phaser.Game({type:Phaser.AUTO,parent:'game',width:400,height:640,backgroundColor:'#10261e',scene:[TempleScene],scale:{mode:Phaser.Scale.FIT,autoCenter:Phaser.Scale.CENTER_BOTH},render:{antialias:true,pixelArt:false}});
-</script>
+  <div id="loading" role="status" aria-live="polite">OPENING EMERALD QUEST…</div>
+  <main id="game" aria-label="Emerald Quest game"></main>
+
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3.90.0/dist/phaser.min.js"></script>
+  <script type="module" src="./src/main.js"></script>
+  <script>
+    window.addEventListener('load', () => {
+      window.setTimeout(() => {
+        const loading = document.getElementById('loading');
+        if (loading) loading.remove();
+      }, 250);
+    });
+  </script>
 </body>
 </html>
