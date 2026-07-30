@@ -3,29 +3,20 @@ export default class BootScene extends Phaser.Scene {
     super('BootScene');
   }
 
-  preload() {
-    this.load.setPath('assets');
-
-    // Placeholder assets - these will be added in upcoming commits.
-    this.load.image('logo', 'images/logo.png');
-  }
-
   create() {
-    console.log('Project Emerald Quest - BootScene');
+    this.cameras.main.setBackgroundColor('#0b1713');
 
-    // Temporary loading screen.
-    this.add.text(
-      this.scale.width / 2,
-      this.scale.height / 2,
-      'Loading Emerald Quest...',
-      {
-        fontFamily: 'Arial',
-        fontSize: '24px',
-        color: '#ffffff'
-      }
-    ).setOrigin(0.5);
+    this.add
+      .text(this.scale.width / 2, this.scale.height / 2, 'EMERALD QUEST', {
+        fontFamily: 'Arial, sans-serif',
+        fontSize: '28px',
+        fontStyle: 'bold',
+        color: '#ffe59a',
+      })
+      .setOrigin(0.5);
 
-    // Next commit will replace this with a real preload pipeline
-    // and then start MainMenuScene.
+    this.time.delayedCall(300, () => {
+      this.scene.start('MainMenuScene');
+    });
   }
 }
