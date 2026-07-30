@@ -2,20 +2,22 @@ import { gameState } from '../Game.js';
 
 const TILE_SIZE = 40;
 const BOARD_TOP = 118;
-const STORAGE_KEY = 'emerald-quest-best-moves';
+const STORAGE_KEY = 'emerald-quest-best-moves-v2';
 const AUDIO_KEY = 'emerald-quest-audio';
 
+// Original level design inspired by the digging-and-gravity puzzle genre.
+// D = diggable earth, R = boulder, G = crystal, K = key, E = exit.
 const LEVEL = [
   '##########',
-  '#P..#...G#',
-  '#.#.#.##.#',
-  '#.#..R...#',
-  '#.###.##.#',
-  '#G....#..#',
-  '###.#.#G.#',
+  '#PDD#...G#',
+  '#D#D#D##D#',
+  '#D#..R...#',
+  '#D###.##D#',
+  '#G....#DD#',
+  '###D#D#GD#',
   '#...#....#',
   '#.R....#K#',
-  '#...##...#',
+  '#DDD##DDD#',
   '#......#E#',
   '##########'
 ];
@@ -27,9 +29,12 @@ export default class TempleScene extends Phaser.Scene {
 
   create() {
     gameState.startLevel({ world: 'jungle-temple', level: 1 });
+    gameState.score = 0;
 
     this.map = LEVEL.map((row) => row.split(''));
     this.entities = new Map();
+    this.terrain = new Map();
+    this.dangerMarkers = [];
     this.busy = false;
     this.pointerStart = null;
     this.gemsCollected = 0;
@@ -44,7 +49,8 @@ export default class TempleScene extends Phaser.Scene {
     this.drawHud();
     this.drawBoard();
     this.bindInput();
-    this.updateHud('Swipe or tap a neighbouring tile to move.');
+    this.updateHud('Dig through earth, collect every crystal, and beware falling boulders.');
+    this.refreshDangerMarkers();
 
     this.cameras.main.fadeIn(250, 8, 18, 15);
   }
@@ -65,7 +71,7 @@ export default class TempleScene extends Phaser.Scene {
   }
 
   createTextures() {
-    if (this.textures.exists('emerald-hero')) return;
+    if (this.textures.exists('emerald-earth')) return;
 
     const graphics = this.add.graphics();
 
@@ -81,6 +87,14 @@ export default class TempleScene extends Phaser.Scene {
     graphics.lineStyle(1, 0x2b5d49, 0.75).strokeRect(4, 4, 32, 32);
     graphics.fillStyle(0x42705b, 0.35).fillCircle(10, 11, 2).fillCircle(30, 27, 2);
     graphics.generateTexture('emerald-floor', 40, 40);
+    graphics.clear();
+
+    graphics.fillStyle(0x60472d).fillRect(1, 1, 38, 38);
+    graphics.fillStyle(0x795b37).fillCircle(8, 10, 5).fillCircle(25, 8, 4);
+    graphics.fillCircle(32, 25, 6).fillCircle(14, 30, 5);
+    graphics.fillStyle(0x9b7647, 0.7).fillCircle(18, 13, 2).fillCircle(7, 28, 2);
+    graphics.lineStyle(2, 0x3d2e20).strokeRect(1, 1, 38, 38);
+    graphics.generateTexture('emerald-earth', 40, 40);
     graphics.clear();
 
     graphics.fillStyle(0x1c5139, 0.95).fillCircle(8, 7, 6).fillCircle(31, 8, 7);
@@ -158,7 +172,7 @@ export default class TempleScene extends Phaser.Scene {
       strokeThickness: 3
     }).setOrigin(0.5);
 
-    this.add.text(200, 50, 'THE SUNKEN TEMPLE • LEVEL 1', {
+    this.subtitle = this.add.text(200, 50, '', {
       fontFamily: 'Arial, sans-serif',
       fontSize: '11px',
       color: '#c9e2d1'
@@ -243,6 +257,12 @@ export default class TempleScene extends Phaser.Scene {
         if (tile !== '#') {
           floor.setInteractive();
           floor.on('pointerdown', () => this.handleTap(row, col));
+        }
+
+        if (tile === 'D') {
+          const earth = this.add.image(x, y, 'emerald-earth').setDepth(2);
+          this.terrain.set(`${row},${col}`, earth);
+          this.board.add(earth);
         }
 
         if (tile === 'G') this.addEntity(row, col, 'emerald-gem');
@@ -386,7 +406,7 @@ export default class TempleScene extends Phaser.Scene {
     if (target === 'R' && !this.tryPushRock(nextRow, nextCol, rowDirection, colDirection)) {
       this.playTone('blocked');
       this.cameras.main.shake(80, 0.0025);
-      this.updateHud('That boulder will not move.');
+      this.updateHud('That boulder needs empty space behind it.');
       return;
     }
 
@@ -402,7 +422,7 @@ export default class TempleScene extends Phaser.Scene {
     this.playerPosition = { row: nextRow, col: nextCol };
 
     if (colDirection !== 0) this.hero.setFlipX(colDirection < 0);
-    this.playTone('step');
+    this.playTone(target === 'D' ? 'dig' : 'step');
 
     const targetX = nextCol * TILE_SIZE + TILE_SIZE / 2;
     const targetY = nextRow * TILE_SIZE + TILE_SIZE / 2;
@@ -419,10 +439,7 @@ export default class TempleScene extends Phaser.Scene {
       y: targetY,
       duration: 135,
       ease: 'Quad.easeOut',
-      onComplete: () => {
-        this.busy = false;
-        this.resolveLanding(target, nextRow, nextCol);
-      }
+      onComplete: () => this.resolveLanding(target, nextRow, nextCol)
     });
 
     this.tweens.add({
@@ -434,18 +451,25 @@ export default class TempleScene extends Phaser.Scene {
   }
 
   tryPushRock(row, col, rowDirection, colDirection) {
-    const destinationRow = row + rowDirection;
+    // Boulders can only be pushed sideways into already-cleared floor.
+    if (rowDirection !== 0) return false;
+
+    const destinationRow = row;
     const destinationCol = col + colDirection;
 
     if (this.map[destinationRow]?.[destinationCol] !== '.') return false;
+    if (this.isPlayerAt(destinationRow, destinationCol)) return false;
 
     const rock = this.entities.get(`${row},${col}`);
+    if (!rock) return false;
+
     this.entities.delete(`${row},${col}`);
     this.entities.set(`${destinationRow},${destinationCol}`, rock);
 
     this.map[destinationRow][destinationCol] = 'R';
     this.map[row][col] = '.';
 
+    gameState.addScore(5);
     this.playTone('rock');
     this.cameras.main.shake(55, 0.0015);
 
@@ -453,6 +477,7 @@ export default class TempleScene extends Phaser.Scene {
       targets: rock,
       x: destinationCol * TILE_SIZE + TILE_SIZE / 2,
       y: destinationRow * TILE_SIZE + TILE_SIZE / 2,
+      angle: rock.angle + 35 * colDirection,
       duration: 145,
       ease: 'Quad.easeOut'
     });
@@ -461,14 +486,30 @@ export default class TempleScene extends Phaser.Scene {
   }
 
   resolveLanding(target, row, col) {
-    if (target === 'G') {
-      this.collectGem(row, col);
-    } else if (target === 'K') {
-      this.collectKey(row, col);
-    } else if (target === 'E') {
+    if (target === 'D') this.digEarth(row, col);
+    if (target === 'G') this.collectGem(row, col);
+    if (target === 'K') this.collectKey(row, col);
+
+    if (target === 'E') {
       this.completeLevel();
-    } else {
-      this.updateHud();
+      return;
+    }
+
+    this.updateHud();
+    this.time.delayedCall(55, () => this.settleGravity());
+  }
+
+  digEarth(row, col) {
+    this.map[row][col] = '.';
+    gameState.addScore(10);
+
+    const earth = this.terrain.get(`${row},${col}`);
+    this.terrain.delete(`${row},${col}`);
+
+    if (earth) {
+      this.createBurst(earth.x, earth.y, 0xb78b54, 11);
+      this.showFloatingText(earth.x, earth.y, '+10', '#ffe1a4');
+      earth.destroy();
     }
   }
 
@@ -481,7 +522,7 @@ export default class TempleScene extends Phaser.Scene {
     this.entities.delete(`${row},${col}`);
 
     if (gem) {
-      this.createBurst(gem.x, gem.y, 0x62f5ff);
+      this.createBurst(gem.x, gem.y, 0x62f5ff, 16);
       this.showFloatingText(gem.x, gem.y, '+100');
       gem.destroy();
     }
@@ -502,7 +543,7 @@ export default class TempleScene extends Phaser.Scene {
     this.entities.delete(`${row},${col}`);
 
     if (key) {
-      this.createBurst(key.x, key.y, 0xf0c54f);
+      this.createBurst(key.x, key.y, 0xf0c54f, 18);
       key.destroy();
     }
 
@@ -526,11 +567,174 @@ export default class TempleScene extends Phaser.Scene {
     );
   }
 
-  createBurst(x, y, tint) {
+  settleGravity() {
+    if (!this.sys.isActive()) return;
+
+    const rockAbovePlayerRow = this.playerPosition.row - 1;
+    const rockAbovePlayerCol = this.playerPosition.col;
+    if (this.map[rockAbovePlayerRow]?.[rockAbovePlayerCol] === 'R'
+      && this.map[this.playerPosition.row]?.[this.playerPosition.col] === '.') {
+      const rock = this.entities.get(`${rockAbovePlayerRow},${rockAbovePlayerCol}`);
+      if (rock) {
+        this.entities.delete(`${rockAbovePlayerRow},${rockAbovePlayerCol}`);
+        this.entities.set(`${this.playerPosition.row},${this.playerPosition.col}`, rock);
+        this.map[rockAbovePlayerRow][rockAbovePlayerCol] = '.';
+        this.map[this.playerPosition.row][this.playerPosition.col] = 'R';
+        this.crushPlayer(rock, this.playerPosition.row, this.playerPosition.col);
+        return;
+      }
+    }
+
+    const falling = [];
+
+    for (let row = this.map.length - 2; row >= 1; row -= 1) {
+      for (let col = 1; col < this.map[row].length - 1; col += 1) {
+        if (this.map[row][col] !== 'R') continue;
+
+        const destinationRow = row + 1;
+        const destinationCol = col;
+        const below = this.map[destinationRow]?.[destinationCol];
+        const playerBelow = this.isPlayerAt(destinationRow, destinationCol);
+
+        if (playerBelow && below === '.') {
+          const rock = this.entities.get(`${row},${col}`);
+          if (rock) {
+            this.entities.delete(`${row},${col}`);
+            this.entities.set(`${destinationRow},${destinationCol}`, rock);
+            this.map[row][col] = '.';
+            this.map[destinationRow][destinationCol] = 'R';
+            this.crushPlayer(rock, destinationRow, destinationCol);
+            return;
+          }
+        }
+
+        if (below !== '.') continue;
+
+        const rock = this.entities.get(`${row},${col}`);
+        if (!rock) continue;
+
+        this.entities.delete(`${row},${col}`);
+        this.entities.set(`${destinationRow},${destinationCol}`, rock);
+        this.map[row][col] = '.';
+        this.map[destinationRow][destinationCol] = 'R';
+        falling.push({ rock, destinationRow, destinationCol });
+      }
+    }
+
+    if (falling.length === 0) {
+      this.busy = false;
+      this.refreshDangerMarkers();
+      this.updateHud();
+      return;
+    }
+
+    this.busy = true;
+    this.playTone('fall');
+    let remaining = falling.length;
+
+    falling.forEach(({ rock, destinationRow, destinationCol }) => {
+      this.tweens.add({
+        targets: rock,
+        y: destinationRow * TILE_SIZE + TILE_SIZE / 2,
+        angle: rock.angle + 22,
+        duration: 145,
+        ease: 'Quad.easeIn',
+        onComplete: () => {
+          remaining -= 1;
+          if (remaining === 0) {
+            this.cameras.main.shake(45, 0.0012);
+            this.time.delayedCall(65, () => this.settleGravity());
+          }
+        }
+      });
+    });
+  }
+
+  crushPlayer(rock, destinationRow, destinationCol) {
+    this.busy = true;
+    this.clearDangerMarkers();
+    this.playTone('crush');
+    this.cameras.main.shake(320, 0.008);
+    this.cameras.main.flash(180, 180, 20, 20);
+
+    this.tweens.add({
+      targets: rock,
+      y: destinationRow * TILE_SIZE + TILE_SIZE / 2,
+      angle: rock.angle + 35,
+      duration: 170,
+      ease: 'Quad.easeIn'
+    });
+
+    this.tweens.add({
+      targets: [this.hero, this.heroShadow],
+      alpha: 0,
+      scale: 0.65,
+      duration: 220,
+      ease: 'Back.easeIn'
+    });
+
+    const livesRemaining = gameState.loseLife();
+    this.updateHud('A falling boulder struck the explorer!');
+
+    this.time.delayedCall(750, () => {
+      if (livesRemaining > 0) {
+        this.scene.restart();
+      } else {
+        this.showGameOver();
+      }
+    });
+  }
+
+  refreshDangerMarkers() {
+    this.clearDangerMarkers();
+
+    for (let row = 1; row < this.map.length - 1; row += 1) {
+      for (let col = 1; col < this.map[row].length - 1; col += 1) {
+        if (this.map[row][col] !== 'R') continue;
+        if (!['.', 'D'].includes(this.map[row + 1]?.[col])) continue;
+
+        const marker = this.add.text(
+          col * TILE_SIZE + TILE_SIZE / 2,
+          (row + 1) * TILE_SIZE + TILE_SIZE / 2,
+          '!',
+          {
+            fontFamily: 'Arial, sans-serif',
+            fontSize: '20px',
+            fontStyle: 'bold',
+            color: '#ffcc59',
+            stroke: '#5a240e',
+            strokeThickness: 4
+          }
+        ).setOrigin(0.5).setDepth(4).setAlpha(0.8);
+
+        this.board.add(marker);
+        this.dangerMarkers.push(marker);
+        this.tweens.add({
+          targets: marker,
+          alpha: 0.25,
+          scale: 1.15,
+          duration: 420,
+          yoyo: true,
+          repeat: -1
+        });
+      }
+    }
+  }
+
+  clearDangerMarkers() {
+    this.dangerMarkers.forEach((marker) => marker.destroy());
+    this.dangerMarkers = [];
+  }
+
+  isPlayerAt(row, col) {
+    return this.playerPosition.row === row && this.playerPosition.col === col;
+  }
+
+  createBurst(x, y, tint, quantity = 16) {
     const particles = this.add.particles(x, y, 'emerald-spark', {
       speed: { min: 35, max: 105 },
       lifespan: 500,
-      quantity: 16,
+      quantity,
       scale: { start: 1, end: 0 },
       gravityY: 90,
       tint
@@ -540,12 +744,12 @@ export default class TempleScene extends Phaser.Scene {
     this.time.delayedCall(550, () => particles.destroy());
   }
 
-  showFloatingText(x, y, label) {
+  showFloatingText(x, y, label, color = '#dfffff') {
     const text = this.add.text(x, y, label, {
       fontFamily: 'Arial, sans-serif',
       fontSize: '13px',
       fontStyle: 'bold',
-      color: '#dfffff',
+      color,
       stroke: '#0b3028',
       strokeThickness: 3
     }).setOrigin(0.5).setDepth(12);
@@ -566,18 +770,20 @@ export default class TempleScene extends Phaser.Scene {
     this.hud[1].setText(`KEY ${this.hasKey ? 1 : 0}/1`);
     this.hud[2].setText(`MOVES ${this.moves}`);
     this.hud[3].setText('♥'.repeat(gameState.lives));
+    this.subtitle.setText(`THE SUNKEN TEMPLE • SCORE ${gameState.score}`);
 
     if (message) this.message.setText(message);
   }
 
   completeLevel() {
     this.busy = true;
+    this.clearDangerMarkers();
 
     const previousBest = this.readBestMoves();
     const isNewBest = previousBest === null || this.moves < previousBest;
     const bestMoves = isNewBest ? this.moves : previousBest;
-    const bonus = Math.max(100, 1200 - this.moves * 20);
-    const stars = this.moves <= 24 ? 3 : this.moves <= 34 ? 2 : 1;
+    const bonus = Math.max(150, 1500 - this.moves * 20);
+    const stars = this.moves <= 30 ? 3 : this.moves <= 43 ? 2 : 1;
 
     gameState.addScore(bonus);
     gameState.setFlag('level-1-complete', true);
@@ -586,11 +792,11 @@ export default class TempleScene extends Phaser.Scene {
     this.playTone('win');
     this.cameras.main.flash(350, 255, 220, 90);
 
-    this.add.rectangle(200, 320, 344, 254, 0x17382f, 0.98)
+    this.add.rectangle(200, 320, 344, 268, 0x17382f, 0.98)
       .setStrokeStyle(4, 0xe4b95c)
       .setDepth(20);
 
-    this.add.text(200, 232, 'CHAMBER CLEARED!', {
+    this.add.text(200, 222, 'CHAMBER CLEARED!', {
       fontFamily: 'Arial, sans-serif',
       fontSize: '25px',
       fontStyle: 'bold',
@@ -599,25 +805,25 @@ export default class TempleScene extends Phaser.Scene {
       strokeThickness: 3
     }).setOrigin(0.5).setDepth(21);
 
-    this.add.text(200, 269, '★'.repeat(stars) + '☆'.repeat(3 - stars), {
+    this.add.text(200, 260, '★'.repeat(stars) + '☆'.repeat(3 - stars), {
       fontFamily: 'Arial, sans-serif',
       fontSize: '30px',
       color: '#ffd45c'
     }).setOrigin(0.5).setDepth(21);
 
-    this.add.text(200, 310,
-      `Moves: ${this.moves}\nBest: ${bestMoves}\nScore: ${gameState.score}`,
+    this.add.text(200, 309,
+      `Moves: ${this.moves}\nBest: ${bestMoves}\nScore: ${gameState.score}\nLives: ${gameState.lives}`,
       {
         fontFamily: 'Arial, sans-serif',
         fontSize: '14px',
         color: '#e7f3e9',
         align: 'center',
-        lineSpacing: 5
+        lineSpacing: 4
       }
     ).setOrigin(0.5).setDepth(21);
 
     if (isNewBest) {
-      this.add.text(200, 364, 'NEW BEST!', {
+      this.add.text(200, 373, 'NEW BEST!', {
         fontFamily: 'Arial, sans-serif',
         fontSize: '12px',
         fontStyle: 'bold',
@@ -625,14 +831,53 @@ export default class TempleScene extends Phaser.Scene {
       }).setOrigin(0.5).setDepth(21);
     }
 
-    const replayButton = this.makePanelButton(139, 404, 'PLAY AGAIN');
-    const menuButton = this.makePanelButton(261, 404, 'MAIN MENU');
+    const replayButton = this.makePanelButton(139, 420, 'PLAY AGAIN');
+    const menuButton = this.makePanelButton(261, 420, 'MAIN MENU');
 
-    replayButton.on('pointerdown', () => this.scene.restart());
-    menuButton.on('pointerdown', () => this.scene.start('MainMenuScene'));
+    replayButton.on('pointerdown', () => {
+      gameState.lives = 3;
+      this.scene.restart();
+    });
+    menuButton.on('pointerdown', () => {
+      gameState.lives = 3;
+      this.scene.start('MainMenuScene');
+    });
   }
 
-  makePanelButton(x, y, label) {
+  showGameOver() {
+    this.add.rectangle(200, 320, 336, 224, 0x321b1b, 0.98)
+      .setStrokeStyle(4, 0xd65b58)
+      .setDepth(30);
+
+    this.add.text(200, 258, 'EXPEDITION LOST', {
+      fontFamily: 'Arial, sans-serif',
+      fontSize: '24px',
+      fontStyle: 'bold',
+      color: '#ffd4cf'
+    }).setOrigin(0.5).setDepth(31);
+
+    this.add.text(200, 310, 'The temple claimed all three lives.\nWatch the warning marks beneath loose rocks.', {
+      fontFamily: 'Arial, sans-serif',
+      fontSize: '13px',
+      color: '#f3dddd',
+      align: 'center',
+      lineSpacing: 6
+    }).setOrigin(0.5).setDepth(31);
+
+    const retryButton = this.makePanelButton(139, 378, 'TRY AGAIN', 31);
+    const menuButton = this.makePanelButton(261, 378, 'MAIN MENU', 31);
+
+    retryButton.on('pointerdown', () => {
+      gameState.lives = 3;
+      this.scene.restart();
+    });
+    menuButton.on('pointerdown', () => {
+      gameState.lives = 3;
+      this.scene.start('MainMenuScene');
+    });
+  }
+
+  makePanelButton(x, y, label, depth = 21) {
     const button = this.add.text(x, y, label, {
       fontFamily: 'Arial, sans-serif',
       fontSize: '13px',
@@ -640,7 +885,7 @@ export default class TempleScene extends Phaser.Scene {
       color: '#3b2708',
       backgroundColor: '#f0c75e',
       padding: { x: 13, y: 10 }
-    }).setOrigin(0.5).setDepth(21).setInteractive({ useHandCursor: true });
+    }).setOrigin(0.5).setDepth(depth).setInteractive({ useHandCursor: true });
 
     button.on('pointerover', () => button.setScale(1.04));
     button.on('pointerout', () => button.setScale(1));
@@ -712,8 +957,11 @@ export default class TempleScene extends Phaser.Scene {
 
     const sounds = {
       step: { frequency: 150, duration: 0.045, volume: 0.025, wave: 'square' },
+      dig: { frequency: 118, duration: 0.07, volume: 0.035, wave: 'triangle' },
       blocked: { frequency: 85, duration: 0.1, volume: 0.04, wave: 'sawtooth' },
       rock: { frequency: 105, duration: 0.13, volume: 0.045, wave: 'triangle' },
+      fall: { frequency: 92, duration: 0.11, volume: 0.045, wave: 'sawtooth' },
+      crush: { frequency: 62, duration: 0.3, volume: 0.07, wave: 'sawtooth' },
       gem: { frequency: 720, duration: 0.16, volume: 0.045, wave: 'sine' },
       key: { frequency: 520, duration: 0.2, volume: 0.05, wave: 'triangle' },
       button: { frequency: 330, duration: 0.07, volume: 0.03, wave: 'sine' },
@@ -736,6 +984,8 @@ export default class TempleScene extends Phaser.Scene {
       oscillator.frequency.exponentialRampToValueAtTime(760, now + sound.duration);
     } else if (type === 'win') {
       oscillator.frequency.exponentialRampToValueAtTime(880, now + sound.duration);
+    } else if (type === 'fall' || type === 'crush') {
+      oscillator.frequency.exponentialRampToValueAtTime(45, now + sound.duration);
     }
 
     gain.gain.setValueAtTime(sound.volume, now);
