@@ -3,37 +3,89 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<meta name="theme-color" content="#0b120b">
+<meta name="theme-color" content="#10261e">
 <title>Temple Quest</title>
 <style>
-:root{--gold:#e8b84d;--ink:#fff5ce;--dark:#070b08;--panel:#15170f;--line:#70552a}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{overscroll-behavior:none}body{margin:0;min-height:100vh;background:radial-gradient(circle at top,#24351e,#0c140d 45%,#050806);color:var(--ink);font-family:Georgia,serif;display:flex;justify-content:center;overflow-x:hidden}.app{width:min(100%,620px);padding:calc(8px + env(safe-area-inset-top)) 8px calc(14px + env(safe-area-inset-bottom))}
-.hud{display:grid;grid-template-columns:1fr 1fr 1fr 1.15fr;gap:5px;margin-bottom:7px}.hudbox{min-height:48px;background:linear-gradient(#262318,#11120d);border:2px solid #7a5a28;border-radius:8px;display:flex;align-items:center;justify-content:center;gap:7px;padding:5px;box-shadow:inset 0 0 0 1px #c69b4840,0 4px 10px #0008}.hudbox strong{font-size:16px;color:#fff2bd;text-shadow:0 2px #000}.icon{font-size:20px}.hearts{letter-spacing:2px;font-size:18px}.title{text-align:center;font-weight:900;letter-spacing:1px;color:#f4d27a;font-size:13px;margin:2px 0 6px}.message{min-height:34px;padding:7px 10px;background:#11160f;border:1px solid #52603b;border-radius:8px;font-family:Arial,sans-serif;font-size:12px;color:#d9ddbd;margin-bottom:7px;display:flex;align-items:center;justify-content:center;text-align:center}
-.frame{padding:7px;background:linear-gradient(135deg,#5d421f,#d6a64a 30%,#6b481f 58%,#e8bf62);border-radius:12px;box-shadow:0 10px 25px #000a}.board{display:grid;grid-template-columns:repeat(10,1fr);border:3px solid #23170d;background:#081009;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;position:relative}.tile{position:relative;aspect-ratio:1;display:flex;align-items:center;justify-content:center;overflow:hidden}.floor{background:linear-gradient(145deg,#1b2d1c,#0f1b12 58%,#0a100b);border:1px solid #ffffff08}.floor:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 20% 25%,#46623a55 0 2px,transparent 3px),linear-gradient(90deg,transparent 48%,#ffffff05 49%,transparent 51%),linear-gradient(transparent 48%,#0005 49%,transparent 51%);background-size:29px 29px,18px 18px,18px 18px}.wall{background:linear-gradient(145deg,#8a7a4f,#574b30 48%,#302a1e);border:1px solid #241c12;box-shadow:inset 0 0 0 2px #a79666,inset 0 -5px #282116}.wall:before{content:"";position:absolute;inset:3px;border:1px solid #2c2418;background:linear-gradient(135deg,#ffffff18,transparent 45%)}.wall:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent 49%,#302819 50%,transparent 51%),linear-gradient(transparent 49%,#302819 50%,transparent 51%);background-size:20px 20px;opacity:.55}
-.vine{position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 20% 20%,#3d7b28 0 2px,transparent 3px),radial-gradient(circle at 70% 55%,#2f6a22 0 2px,transparent 3px);opacity:.55}.entity{position:relative;z-index:3}.explorer{width:74%;height:84%;filter:drop-shadow(0 4px 2px #000c);animation:bob .55s ease-in-out infinite alternate}.explorer .legs{position:absolute;left:27%;right:27%;bottom:1%;height:24%;background:linear-gradient(90deg,#302b24 0 40%,transparent 40% 60%,#302b24 60%);border-radius:2px}.explorer .body{position:absolute;left:20%;right:20%;top:35%;bottom:18%;background:linear-gradient(#d69b47,#8a5325);border:2px solid #4f2e18;border-radius:35%}.explorer .head{position:absolute;left:30%;right:30%;top:18%;height:27%;background:#d89d68;border:2px solid #673b25;border-radius:46%;z-index:2}.explorer .hat{position:absolute;left:16%;right:16%;top:3%;height:28%;background:linear-gradient(#e8c16b,#946226);border:2px solid #5e3d1d;border-radius:55% 55% 20% 20%;z-index:3}.explorer .hat:after{content:"";position:absolute;left:-13%;right:-13%;bottom:-3px;height:5px;background:#70471f;border-radius:5px}.explorer .pack{position:absolute;left:6%;top:40%;width:28%;height:38%;background:#5c3924;border:2px solid #382216;border-radius:4px}
-.gem{width:58%;height:66%;clip-path:polygon(50% 0,92% 30%,72% 100%,28% 100%,8% 30%);background:linear-gradient(135deg,#efffff 0 12%,#39d8ff 13% 34%,#0a74c9 35% 56%,#59edff 57% 78%,#054b9d 79%);filter:drop-shadow(0 0 8px #36d9ff) drop-shadow(0 4px 2px #0009);animation:shine 1s ease-in-out infinite alternate}.rock{width:76%;height:76%;border-radius:50%;background:radial-gradient(circle at 32% 28%,#b6a785 0 9%,#7c704f 10% 30%,#4d4634 31% 64%,#2d2920 65%);border:2px solid #211d17;box-shadow:inset -6px -7px #0006,inset 4px 4px #ffffff20,0 5px 3px #0008}.door{width:70%;height:84%;border-radius:42% 42% 6% 6%;background:linear-gradient(90deg,#573019,#a45f2c 20%,#6d3a1d 50%,#b86b30 80%,#482514);border:3px solid #24130b;box-shadow:inset 0 0 0 3px #d99945aa,0 4px 4px #000b}.door:after{content:"🔒";position:absolute;left:50%;top:52%;transform:translate(-50%,-50%);font-size:12px}.door.open{filter:drop-shadow(0 0 12px #ffd552);animation:doorGlow .9s ease-in-out infinite alternate}.door.open:after{content:""}.tapHint{position:absolute;right:8px;bottom:8px;z-index:5;width:48px;height:48px;border-radius:50%;border:2px solid #ffffffcc;background:#ffffff22;display:flex;align-items:center;justify-content:center;font-size:27px;animation:pulse 1.3s infinite;pointer-events:none}.toolbar{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:8px}.tool{border:2px solid #76582d;border-radius:8px;background:linear-gradient(#29251a,#11120d);color:#f5dfa1;padding:9px 5px;font-family:Georgia,serif;font-weight:800}.tool:active{transform:translateY(1px)}.tip{text-align:center;color:#c9c9ab;font:12px/1.4 Arial,sans-serif;margin-top:8px}.overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:#020502e8;padding:20px;z-index:20}.overlay.show{display:flex}.modal{width:min(100%,360px);background:linear-gradient(#2b291a,#11120d);border:3px solid #b98b3d;border-radius:14px;text-align:center;padding:22px;box-shadow:0 20px 50px #000}.modal button{border:2px solid #f0d580;border-radius:9px;background:linear-gradient(#f4d97f,#c28a2e);padding:10px 16px;font-weight:900;color:#322000}@keyframes bob{to{transform:translateY(-2px)}}@keyframes shine{to{transform:translateY(-2px) scale(1.09);filter:drop-shadow(0 0 14px #70edff) drop-shadow(0 4px 2px #0009)}}@keyframes doorGlow{to{filter:drop-shadow(0 0 18px #ffd552)}}@keyframes pulse{50%{transform:scale(.9);opacity:.55}}@media(max-width:390px){.hudbox strong{font-size:13px}.icon{font-size:17px}.hud{gap:3px}.frame{padding:5px}.title{font-size:12px}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;width:100%;height:100%;overflow:hidden;overscroll-behavior:none;background:#08120f;font-family:Arial,sans-serif}#game{width:100%;height:100%;display:flex;align-items:center;justify-content:center}canvas{display:block;touch-action:none}#loading{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;color:#ffe591;background:#08120f;font-weight:700;letter-spacing:1px;z-index:3}
 </style>
 </head>
 <body>
-<main class="app">
-<section class="hud"><div class="hudbox"><span class="icon">💎</span><strong id="gems">0/0</strong></div><div class="hudbox"><span class="icon">🔑</span><strong>0/1</strong></div><div class="hudbox"><strong>LVL 01</strong></div><div class="hudbox"><span class="hearts">❤️❤️❤️</span></div></section>
-<div class="title">THE SUNKEN TEMPLE</div>
-<div id="message" class="message">Swipe anywhere on the temple, or tap an adjacent tile.</div>
-<div class="frame"><div id="board" class="board" aria-label="Temple adventure board"><div class="tapHint">☝️</div></div></div>
-<section class="toolbar"><button id="objectives" class="tool">💎 OBJECTIVE</button><button id="movesBtn" class="tool">MOVES <span id="moves">0</span></button><button id="restart" class="tool">↻ RESTART</button></section>
-<div class="tip">Collect every crystal, push rocks, and reach the glowing exit. No arrow buttons—use natural touch gestures.</div>
-</main>
-<div id="overlay" class="overlay"><div class="modal"><h2>Chamber Cleared!</h2><p>You escaped in <strong id="finalMoves">0</strong> moves.</p><button id="again">Play Again</button></div></div>
+<div id="loading">OPENING THE TEMPLE…</div>
+<div id="game"></div>
+<script src="https://cdn.jsdelivr.net/npm/phaser@3.90.0/dist/phaser.min.js"></script>
 <script>
-const template=['##########','#P..#...G#','#.#.#.##.#','#.#...R..#','#.###.##.#','#G....#..#','###.#.#G.#','#...#....#','#.R....#E#','##########'];
-const boardEl=document.getElementById('board'),gemsEl=document.getElementById('gems'),movesEl=document.getElementById('moves'),messageEl=document.getElementById('message'),overlay=document.getElementById('overlay');
-let map,player,totalGems,collected,moves,touchStart=null;
-function explorerMarkup(){return '<div class="entity explorer"><span class="pack"></span><span class="legs"></span><span class="body"></span><span class="head"></span><span class="hat"></span></div>'}
-function reset(){map=template.map(r=>r.split(''));totalGems=0;collected=0;moves=0;overlay.classList.remove('show');for(let r=0;r<map.length;r++)for(let c=0;c<map[r].length;c++){if(map[r][c]==='P'){player={r,c};map[r][c]='.'}if(map[r][c]==='G')totalGems++}messageEl.textContent='Swipe anywhere on the temple, or tap an adjacent tile.';render()}
-function render(){boardEl.innerHTML='';for(let r=0;r<map.length;r++)for(let c=0;c<map[r].length;c++){const tile=document.createElement('div'),v=map[r][c];tile.className='tile '+(v==='#'?'wall':'floor');tile.dataset.r=r;tile.dataset.c=c;if(v!== '#'&&(r+c)%4===0)tile.innerHTML='<span class="vine"></span>';if(player.r===r&&player.c===c)tile.innerHTML+=explorerMarkup();else if(v==='G')tile.innerHTML+='<div class="entity gem"></div>';else if(v==='R')tile.innerHTML+='<div class="entity rock"></div>';else if(v==='E')tile.innerHTML+='<div class="entity door '+(collected<totalGems?'':'open')+'"></div>';boardEl.appendChild(tile)}const hint=document.createElement('div');hint.className='tapHint';hint.textContent='☝️';boardEl.appendChild(hint);gemsEl.textContent=collected+'/'+totalGems;movesEl.textContent=moves}
-function walk(dr,dc){const nr=player.r+dr,nc=player.c+dc,target=map[nr]?.[nc];if(target===undefined||target==='#')return;if(target==='R'){const rr=nr+dr,rc=nc+dc;if(map[rr]?.[rc]!=='.'){messageEl.textContent='The boulder is blocked.';return}map[rr][rc]='R';map[nr][nc]='.'}if(target==='E'&&collected<totalGems){messageEl.textContent='The gate is sealed. Collect every crystal.';return}player={r:nr,c:nc};moves++;if(target==='G'){map[nr][nc]='.';collected++;messageEl.textContent=collected===totalGems?'The exit is open!':'Crystal collected!'}if(target==='E'&&collected===totalGems){render();document.getElementById('finalMoves').textContent=moves;overlay.classList.add('show');return}render()}
-boardEl.addEventListener('pointerdown',e=>{touchStart={x:e.clientX,y:e.clientY}});boardEl.addEventListener('pointerup',e=>{if(!touchStart)return;const dx=e.clientX-touchStart.x,dy=e.clientY-touchStart.y;touchStart=null;if(Math.max(Math.abs(dx),Math.abs(dy))>22){if(Math.abs(dx)>Math.abs(dy))walk(0,dx>0?1:-1);else walk(dy>0?1:-1,0);return}const tile=e.target.closest('.tile');if(!tile)return;const r=+tile.dataset.r,c=+tile.dataset.c,dr=r-player.r,dc=c-player.c;if(Math.abs(dr)+Math.abs(dc)===1)walk(dr,dc)});boardEl.addEventListener('pointermove',e=>{if(touchStart)e.preventDefault()});
-document.addEventListener('keydown',e=>{const d={ArrowUp:[-1,0],ArrowDown:[1,0],ArrowLeft:[0,-1],ArrowRight:[0,1]}[e.key];if(d){e.preventDefault();walk(...d)}});document.getElementById('restart').addEventListener('click',reset);document.getElementById('again').addEventListener('click',reset);document.getElementById('objectives').addEventListener('click',()=>messageEl.textContent='Collect all crystals, push rocks, then enter the gate.');document.getElementById('movesBtn').addEventListener('click',()=>messageEl.textContent='Moves used: '+moves);reset();
+const COLS=10,ROWS=12,TILE=40,TOP=118;
+const LEVEL=[
+'##########',
+'#P..#...G#',
+'#.#.#.##.#',
+'#.#..R...#',
+'#.###.##.#',
+'#G....#..#',
+'###.#.#G.#',
+'#...#....#',
+'#.R....#K#',
+'#...##...#',
+'#......#E#',
+'##########'];
+class TempleScene extends Phaser.Scene{
+ constructor(){super('Temple')}
+ create(){
+  document.getElementById('loading').style.display='none';
+  this.cameras.main.setBackgroundColor('#10261e');
+  this.makeTextures();
+  this.map=LEVEL.map(r=>r.split(''));this.gems=0;this.total=0;this.moves=0;this.hasKey=false;this.busy=false;
+  for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++){if(this.map[r][c]==='P'){this.player={r,c};this.map[r][c]='.'}if(this.map[r][c]==='G')this.total++}
+  this.drawBackground();this.drawHud();this.drawBoard();this.bindInput();this.updateHud('Swipe or tap a neighbouring tile to move.');
+ }
+ makeTextures(){
+  const g=this.add.graphics();
+  g.fillStyle(0x2c4536).fillRoundedRect(0,0,40,40,4).lineStyle(2,0x51715c).strokeRoundedRect(1,1,38,38,4);g.lineStyle(1,0x1b2b22).strokeRect(5,5,30,30);g.generateTexture('wall',40,40);g.clear();
+  g.fillStyle(0x163329).fillRect(0,0,40,40);g.fillStyle(0x20483a).fillRect(2,2,36,36);g.lineStyle(1,0x2c5b49,0.7).strokeRect(4,4,32,32);g.fillStyle(0x305d49,0.35).fillCircle(10,11,2).fillCircle(30,27,2);g.generateTexture('floor',40,40);g.clear();
+  g.fillStyle(0x183c2f).fillRect(0,0,40,40);g.fillStyle(0x2e6c50).fillCircle(8,6,5).fillCircle(31,8,6).fillCircle(35,31,5).fillCircle(5,33,5);g.generateTexture('moss',40,40);g.clear();
+  g.fillStyle(0x6b5f55).fillCircle(20,20,15);g.fillStyle(0x94877c).fillCircle(15,14,7);g.fillStyle(0x4a413c).fillCircle(26,25,6);g.lineStyle(2,0x2c2724).strokeCircle(20,20,15);g.generateTexture('rock',40,40);g.clear();
+  g.fillStyle(0x59eaff).fillTriangle(20,3,35,14,28,36).fillTriangle(20,3,5,14,12,36);g.fillStyle(0xd8ffff,0.8).fillTriangle(20,5,15,16,23,15);g.lineStyle(2,0x0878a5).strokeTriangle(20,3,35,14,28,36).strokeTriangle(20,3,5,14,12,36);g.generateTexture('gem',40,40);g.clear();
+  g.fillStyle(0xe8bf4f).fillCircle(13,20,7).fillRect(18,17,17,6);g.fillStyle(0x8c5a14).fillCircle(13,20,3).fillRect(28,21,4,7);g.generateTexture('key',40,40);g.clear();
+  g.fillStyle(0x6e3d20).fillRoundedRect(7,4,26,34,12).fillStyle(0xbc7136).fillRoundedRect(11,8,18,30,8);g.lineStyle(2,0x2a160d).strokeRoundedRect(7,4,26,34,12);g.fillStyle(0xf7d46a).fillCircle(25,23,2);g.generateTexture('door',40,40);g.clear();
+  g.fillStyle(0xd9a05d).fillCircle(20,15,7);g.fillStyle(0x76502b).fillEllipse(20,8,24,8).fillRoundedRect(14,20,12,15,4);g.fillStyle(0x2d2341).fillRect(14,32,5,7).fillRect(22,32,5,7);g.fillStyle(0xe5c06d).fillEllipse(20,5,17,7);g.generateTexture('hero',40,40);g.clear();
+  g.fillStyle(0xffd85c).fillCircle(4,4,4);g.generateTexture('spark',8,8);g.destroy();
+ }
+ drawBackground(){
+  this.add.rectangle(200,320,400,640,0x10261e);for(let i=0;i<18;i++){this.add.circle(Phaser.Math.Between(0,400),Phaser.Math.Between(0,640),Phaser.Math.Between(12,40),0x1e4a39,0.18)}
+  this.add.rectangle(200,67,380,92,0x173c30,0.98).setStrokeStyle(3,0xc5903d);this.add.text(200,25,'TEMPLE QUEST',{fontFamily:'Arial',fontSize:'24px',fontStyle:'bold',color:'#ffe9a6'}).setOrigin(.5);this.add.text(200,50,'THE SUNKEN TEMPLE • LEVEL 1',{fontFamily:'Arial',fontSize:'11px',color:'#c9e2d1'}).setOrigin(.5);
+ }
+ drawHud(){
+  this.hud=[];const labels=['◆ 0/'+this.total,'KEY 0/1','MOVES 0','♥♥♥'];const xs=[55,145,245,345];for(let i=0;i<4;i++){this.add.rectangle(xs[i],88,82,34,0x203f35).setStrokeStyle(2,0xb4863e);this.hud.push(this.add.text(xs[i],88,labels[i],{fontFamily:'Arial',fontSize:i===3?'16px':'12px',fontStyle:'bold',color:i===3?'#ff6872':'#fff0b5'}).setOrigin(.5))}
+  this.message=this.add.text(200,620,'',{fontFamily:'Arial',fontSize:'12px',color:'#e8e0bf',align:'center',wordWrap:{width:360}}).setOrigin(.5);
+  const restart=this.add.text(374,18,'↻',{fontFamily:'Arial',fontSize:'25px',fontStyle:'bold',color:'#ffe591',backgroundColor:'#27483b',padding:{x:8,y:4}}).setOrigin(1,0).setInteractive({useHandCursor:true});restart.on('pointerdown',()=>this.scene.restart());
+ }
+ drawBoard(){
+  this.boardContainer=this.add.container(0,TOP);this.tiles=[];this.entities=new Map();
+  for(let r=0;r<ROWS;r++){for(let c=0;c<COLS;c++){const x=c*TILE+20,y=r*TILE+20,v=this.map[r][c];const base=this.add.image(x,y,v==='#'?'wall':'floor');if(v==='#'&&((r+c)%3===0))this.add.image(x,y,'moss').setAlpha(.35);this.boardContainer.add(base);if(v!=='#'){base.setInteractive();base.setData({r,c});base.on('pointerdown',()=>this.tapTile(r,c))}if(v==='G')this.addEntity(r,c,'gem');if(v==='R')this.addEntity(r,c,'rock');if(v==='K')this.addEntity(r,c,'key');if(v==='E')this.addEntity(r,c,'door')}}
+  this.hero=this.add.image(this.player.c*TILE+20,this.player.r*TILE+20,'hero').setDepth(8);this.boardContainer.add(this.hero);this.tweens.add({targets:this.hero,y:'-=2',duration:450,yoyo:true,repeat:-1,ease:'Sine.easeInOut'});
+ }
+ addEntity(r,c,key){const s=this.add.image(c*TILE+20,r*TILE+20,key).setDepth(5);if(key==='gem')this.tweens.add({targets:s,scale:1.12,duration:550,yoyo:true,repeat:-1,ease:'Sine.easeInOut'});if(key==='door')s.setTint(0x777777);this.entities.set(r+','+c,s);this.boardContainer.add(s)}
+ bindInput(){
+  this.input.on('pointerdown',p=>{this.start={x:p.x,y:p.y}});this.input.on('pointerup',p=>{if(!this.start||this.busy)return;const dx=p.x-this.start.x,dy=p.y-this.start.y;this.start=null;if(Math.max(Math.abs(dx),Math.abs(dy))<24)return;if(Math.abs(dx)>Math.abs(dy))this.move(0,dx>0?1:-1);else this.move(dy>0?1:-1,0)});
+  this.input.keyboard.on('keydown',e=>{const k={ArrowUp:[-1,0],ArrowDown:[1,0],ArrowLeft:[0,-1],ArrowRight:[0,1]}[e.key];if(k)this.move(...k)})
+ }
+ tapTile(r,c){const dr=r-this.player.r,dc=c-this.player.c;if(Math.abs(dr)+Math.abs(dc)===1)this.move(dr,dc)}
+ updateHud(msg){this.hud[0].setText('◆ '+this.gems+'/'+this.total);this.hud[1].setText('KEY '+(this.hasKey?'1':'0')+'/1');this.hud[2].setText('MOVES '+this.moves);if(msg)this.message.setText(msg)}
+ move(dr,dc){
+  if(this.busy)return;const nr=this.player.r+dr,nc=this.player.c+dc,target=this.map[nr]?.[nc];if(target===undefined||target==='#'){this.cameras.main.shake(70,.002);return}
+  if(target==='R'){const rr=nr+dr,rc=nc+dc;if(dr!==0||this.map[rr]?.[rc]!=='.'){this.updateHud('That boulder will not move.');return}const rock=this.entities.get(nr+','+nc);this.entities.delete(nr+','+nc);this.entities.set(rr+','+rc,rock);this.map[rr][rc]='R';this.map[nr][nc]='.';this.tweens.add({targets:rock,x:rc*TILE+20,duration:130,ease:'Quad.easeOut'})}
+  if(target==='E'&&(!this.hasKey||this.gems<this.total)){this.updateHud('The gate needs the key and every crystal.');this.cameras.main.shake(90,.002);return}
+  this.busy=true;this.moves++;this.player={r:nr,c:nc};this.tweens.add({targets:this.hero,x:nc*TILE+20,y:nr*TILE+20,duration:135,ease:'Quad.easeOut',onComplete:()=>{this.busy=false;this.land(target,nr,nc)}})
+ }
+ land(target,r,c){
+  if(target==='G'){this.map[r][c]='.';this.gems++;const s=this.entities.get(r+','+c);this.entities.delete(r+','+c);this.burst(s.x,s.y);s.destroy();this.updateHud(this.gems===this.total?'All crystals found. Now find the key!':'Crystal collected!')}
+  else if(target==='K'){this.map[r][c]='.';this.hasKey=true;const s=this.entities.get(r+','+c);this.entities.delete(r+','+c);s.destroy();const door=[...this.entities.values()].find(x=>x.texture.key==='door');if(door)door.clearTint();this.updateHud(this.gems===this.total?'The exit gate is open!':'Key found. Collect the remaining crystals.')}
+  else if(target==='E'&&this.hasKey&&this.gems===this.total){this.win();return}else this.updateHud();
+ }
+ burst(x,y){const p=this.add.particles(x,y,'spark',{speed:{min:30,max:90},lifespan:450,quantity:14,scale:{start:1,end:0},gravityY:80});this.boardContainer.add(p);this.time.delayedCall(500,()=>p.destroy())}
+ win(){this.busy=true;this.cameras.main.flash(350,255,220,90);const panel=this.add.rectangle(200,320,330,190,0x183a2f,.97).setStrokeStyle(4,0xe4b95c).setDepth(20);this.add.text(200,274,'CHAMBER CLEARED!',{fontFamily:'Arial',fontSize:'25px',fontStyle:'bold',color:'#ffe7a0'}).setOrigin(.5).setDepth(21);this.add.text(200,315,'You escaped in '+this.moves+' moves.',{fontFamily:'Arial',fontSize:'15px',color:'#e7f3e9'}).setOrigin(.5).setDepth(21);const b=this.add.text(200,360,'PLAY AGAIN',{fontFamily:'Arial',fontSize:'16px',fontStyle:'bold',color:'#3b2708',backgroundColor:'#f0c75e',padding:{x:18,y:10}}).setOrigin(.5).setDepth(21).setInteractive();b.on('pointerdown',()=>this.scene.restart())}
+}
+new Phaser.Game({type:Phaser.AUTO,parent:'game',width:400,height:640,backgroundColor:'#10261e',scene:[TempleScene],scale:{mode:Phaser.Scale.FIT,autoCenter:Phaser.Scale.CENTER_BOTH},render:{antialias:true,pixelArt:false}});
 </script>
 </body>
 </html>
