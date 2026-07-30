@@ -54,6 +54,28 @@ These repositories are used for research and discovery only. No code, images, or
 - Use in Emerald Quest: Architecture and interaction reference while implementing original Phaser-compatible JavaScript systems. No Godot project files or media assets have been copied at this stage.
 - Destination path: Not applicable; reference only.
 
+## Restricted gameplay references
+
+The following repositories may be studied at a high level for genre conventions and gameplay analysis, but their code, maps, extracted resources, names, artwork, audio, and other game content must not be copied into Emerald Quest.
+
+### diamondRush recreation and extraction repository
+
+- Repository: https://github.com/kubikaugustyn/diamondRush
+- Repository licence: MIT for material owned by the repository author.
+- Important restriction: The repository includes decompiled, extracted, and decoded material associated with the commercial game Diamond Rush. The repository licence cannot be assumed to relicense third-party Gameloft content.
+- Permitted use in Emerald Quest: High-level research into puzzle pacing, obstacle categories, mobile controls, and level-progression concepts only.
+- Prohibited use: Copying source code, decompiled logic, maps, level data, sprites, textures, sound effects, music, trademarks, character designs, or extracted files.
+- Destination path: Not applicable; reference only.
+
+### DiamondRushSource decompilation repository
+
+- Repository: https://github.com/kubikaugustyn/DiamondRushSource
+- Description: Decompilation of Gameloft's Diamond Rush (2006) for Nokia mobile devices.
+- Licence status: No repository licence was visible when reviewed.
+- Permitted use in Emerald Quest: High-level gameplay research only.
+- Prohibited use: Copying or adapting its source, decompiled logic, assets, maps, names, audio, or other protected game content.
+- Destination path: Not applicable; reference only.
+
 ## Asset acceptance rules
 
 Before an external asset is committed, this file must record:
