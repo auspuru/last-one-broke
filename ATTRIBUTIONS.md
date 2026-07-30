@@ -42,6 +42,18 @@ These repositories are used for research and discovery only. No code, images, or
 - Repository: https://github.com/Kavex/GameDev-Resources
 - Use: Discovery of asset libraries, audio resources, tools, and development references.
 
+## Licensed implementation references
+
+### GDQuest Godot 3 demos
+
+- Repository: https://github.com/gdquest-demos/godot-3-demos
+- Creator: Nathan Lovato / GDQuest contributors
+- Licence: MIT
+- Attribution required: Yes; preserve the MIT copyright and permission notice when copying substantial portions.
+- Relevant references: Grid-based movement, title-screen input, game UI, finite-state machines, 2D camera rigs, character scene setup, pathfinding, and screen-size handling.
+- Use in Emerald Quest: Architecture and interaction reference while implementing original Phaser-compatible JavaScript systems. No Godot project files or media assets have been copied at this stage.
+- Destination path: Not applicable; reference only.
+
 ## Asset acceptance rules
 
 Before an external asset is committed, this file must record:
