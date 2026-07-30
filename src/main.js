@@ -1,4 +1,6 @@
 import BootScene from './scenes/BootScene.js';
+import MainMenuScene from './scenes/MainMenuScene.js';
+import TempleScene from './scenes/TempleScene.js';
 
 const GAME_WIDTH = 400;
 const GAME_HEIGHT = 640;
@@ -9,7 +11,7 @@ const config = {
   width: GAME_WIDTH,
   height: GAME_HEIGHT,
   backgroundColor: '#10261e',
-  scene: [BootScene],
+  scene: [BootScene, MainMenuScene, TempleScene],
   scale: {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
