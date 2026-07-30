@@ -6,14 +6,14 @@
     name="viewport"
     content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
   >
-  <meta name="theme-color" content="#040b09">
+  <meta name="theme-color" content="#06100c">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>Emerald Quest</title>
   <style>
     :root {
       color-scheme: dark;
-      background: #040b09;
+      background: #06100c;
     }
 
     * {
@@ -28,28 +28,29 @@
       margin: 0;
       overflow: hidden;
       overscroll-behavior: none;
-      background: #040b09;
+      background: #06100c;
       font-family: "Trebuchet MS", Arial, sans-serif;
     }
 
     body {
       min-height: 100dvh;
-      padding-top: env(safe-area-inset-top);
-      padding-right: env(safe-area-inset-right);
-      padding-bottom: env(safe-area-inset-bottom);
-      padding-left: env(safe-area-inset-left);
     }
 
     #game {
-      width: 100%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100dvh;
+      overflow: hidden;
+      background: #06100c;
     }
 
     canvas {
       display: block;
+      width: 100% !important;
+      height: 100% !important;
+      max-width: none !important;
+      max-height: none !important;
       touch-action: none;
     }
 
@@ -60,7 +61,7 @@
       z-index: 20;
       place-items: center;
       text-align: center;
-      background: #040b09;
+      background: #06100c;
     }
 
     #loading {
@@ -75,7 +76,7 @@
       padding: 32px;
       background:
         radial-gradient(circle at 50% 45%, rgba(45, 118, 84, 0.3), transparent 44%),
-        #040b09;
+        #06100c;
     }
 
     #rotate-device .panel {
@@ -135,7 +136,7 @@
     <div class="panel">
       <span class="icon" aria-hidden="true">↻</span>
       <strong>Rotate for the full temple</strong>
-      <p>Emerald Quest now uses a cinematic landscape layout with a larger chamber, HUD and mobile controls.</p>
+      <p>Emerald Quest uses a widescreen chamber and edge-mounted mobile controls.</p>
       <button id="play-portrait" type="button">PLAY ANYWAY</button>
     </div>
   </div>
@@ -163,8 +164,7 @@
 
     window.addEventListener('load', () => {
       window.setTimeout(() => {
-        const loading = document.getElementById('loading');
-        if (loading) loading.remove();
+        document.getElementById('loading')?.remove();
       }, 250);
     });
   </script>
