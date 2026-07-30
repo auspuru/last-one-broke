@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="stone" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#718d7d"/><stop offset=".45" stop-color="#405d50"/><stop offset="1" stop-color="#1e3029"/></linearGradient>
+    <radialGradient id="eye"><stop stop-color="#fff2d1"/><stop offset=".25" stop-color="#ff6c58"/><stop offset="1" stop-color="#8c130e"/></radialGradient>
+  </defs>
+  <ellipse cx="32" cy="58" rx="23" ry="5" fill="#000" opacity=".35"/>
+  <path d="M15 22c2-11 9-17 17-17s15 6 17 17l-3 31c-8 6-20 7-28 0z" fill="url(#stone)" stroke="#14231d" stroke-width="3"/>
+  <path d="M20 17l6-9 6 8 6-8 7 10" fill="#49685a" stroke="#1b2b24" stroke-width="2"/>
+  <path d="M20 33c8-7 16-7 24 0v17c-7 4-17 4-24 0z" fill="#263c33"/>
+  <path d="M20 24c8-5 16-5 24 0" fill="none" stroke="#9bb5a7" stroke-opacity=".5" stroke-width="2"/>
+  <circle cx="25" cy="27" r="6" fill="#6f1d19" opacity=".45"/>
+  <circle cx="39" cy="27" r="6" fill="#6f1d19" opacity=".45"/>
+  <circle cx="25" cy="27" r="3.2" fill="url(#eye)"/>
+  <circle cx="39" cy="27" r="3.2" fill="url(#eye)"/>
+  <path d="M25 43h14M28 47h8" stroke="#0b1511" stroke-width="3" stroke-linecap="round"/>
+  <path d="M16 35l-8 8 8 7M48 35l8 8-8 7" fill="#476659" stroke="#172820" stroke-width="2"/>
+  <path d="M10 42l5 2M54 42l-5 2" stroke="#ff6f5d" stroke-width="2" opacity=".6"/>
+  <circle cx="32" cy="49" r="6" fill="#4aefb8" opacity=".16"/>
+  <path d="M32 44l4 5-4 5-4-5z" fill="#65efbd" stroke="#c9fff0" stroke-width="1"/>
+  <path d="M18 20l4 3-3 5M46 20l-4 3 3 5" fill="none" stroke="#b6c8bf" stroke-opacity=".45"/>
+</svg>
