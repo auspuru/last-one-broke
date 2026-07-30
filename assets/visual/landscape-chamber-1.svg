@@ -1,0 +1,141 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#07140f"/>
+      <stop offset="0.55" stop-color="#0b2119"/>
+      <stop offset="1" stop-color="#030806"/>
+    </linearGradient>
+    <linearGradient id="stone" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#435342"/>
+      <stop offset="0.48" stop-color="#263a2f"/>
+      <stop offset="1" stop-color="#111c17"/>
+    </linearGradient>
+    <linearGradient id="stoneGold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#c59b49"/>
+      <stop offset="0.45" stop-color="#8b6128"/>
+      <stop offset="1" stop-color="#3c2510"/>
+    </linearGradient>
+    <linearGradient id="water" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1ad7b5" stop-opacity="0.78"/>
+      <stop offset="0.45" stop-color="#078d7b" stop-opacity="0.8"/>
+      <stop offset="1" stop-color="#063a38" stop-opacity="0.88"/>
+    </linearGradient>
+    <radialGradient id="torch" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#ffd36b" stop-opacity="0.55"/>
+      <stop offset="0.4" stop-color="#ff9d36" stop-opacity="0.2"/>
+      <stop offset="1" stop-color="#ff7b22" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="emeraldGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#77f4c4" stop-opacity="0.24"/>
+      <stop offset="1" stop-color="#2fcf9c" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="blocks" width="54" height="38" patternUnits="userSpaceOnUse">
+      <rect width="54" height="38" fill="#111d18"/>
+      <rect x="2" y="2" width="50" height="34" rx="4" fill="url(#stone)" stroke="#0b120f" stroke-width="2"/>
+      <path d="M5 7h42M7 31h39" stroke="#78866e" stroke-opacity="0.18"/>
+      <path d="M17 2l-3 34M39 2l2 34" stroke="#07100c" stroke-opacity="0.45"/>
+    </pattern>
+    <pattern id="smallBlocks" width="34" height="26" patternUnits="userSpaceOnUse">
+      <rect width="34" height="26" fill="#0b1511"/>
+      <rect x="1.5" y="1.5" width="31" height="23" rx="3" fill="#25372d" stroke="#101813" stroke-width="1.5"/>
+      <path d="M4 5h25" stroke="#708372" stroke-opacity="0.18"/>
+    </pattern>
+    <filter id="softShadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="5"/>
+      <feOffset dx="0" dy="5" result="o"/>
+      <feColorMatrix in="o" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .55 0"/>
+      <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <rect width="960" height="540" fill="url(#bg)"/>
+  <rect x="0" y="72" width="960" height="418" fill="url(#smallBlocks)" opacity="0.64"/>
+  <rect x="0" y="72" width="960" height="418" fill="#00100b" opacity="0.28"/>
+
+  <circle cx="88" cy="278" r="115" fill="url(#torch)"/>
+  <circle cx="520" cy="282" r="102" fill="url(#torch)" opacity="0.72"/>
+  <circle cx="902" cy="280" r="120" fill="url(#torch)"/>
+  <circle cx="325" cy="300" r="140" fill="url(#emeraldGlow)" opacity="0.45"/>
+
+  <g filter="url(#softShadow)">
+    <rect x="58" y="80" width="462" height="426" rx="8" fill="#07100d" stroke="#3b2510" stroke-width="14"/>
+    <rect x="67" y="89" width="444" height="408" rx="5" fill="#0d1914" stroke="url(#stoneGold)" stroke-width="5"/>
+    <rect x="78" y="100" width="422" height="386" rx="3" fill="#07100d" stroke="#69532e" stroke-width="2"/>
+  </g>
+
+  <g fill="url(#blocks)" stroke="#121713" stroke-width="3">
+    <rect x="24" y="84" width="42" height="420" rx="5"/>
+    <rect x="512" y="84" width="42" height="420" rx="5"/>
+    <rect x="900" y="84" width="42" height="420" rx="5"/>
+  </g>
+  <g fill="url(#stoneGold)" stroke="#2d1b0b" stroke-width="3">
+    <path d="M16 80h58l-7 18H23z"/>
+    <path d="M504 80h58l-7 18h-44z"/>
+    <path d="M892 80h58l-7 18h-44z"/>
+    <path d="M16 500h58l-7-18H23z"/>
+    <path d="M504 500h58l-7-18h-44z"/>
+    <path d="M892 500h58l-7-18h-44z"/>
+  </g>
+
+  <g filter="url(#softShadow)">
+    <path d="M550 92h382v390H550z" fill="#06100c" stroke="#3a2410" stroke-width="12"/>
+    <path d="M559 101h364v372H559z" fill="#0b1712" stroke="url(#stoneGold)" stroke-width="4"/>
+    <path d="M575 115h332v342H575z" fill="#101d17" stroke="#5c4627" stroke-width="2"/>
+  </g>
+
+  <g opacity="0.88">
+    <path d="M565 224h342v26H565z" fill="url(#blocks)" stroke="#0c110d" stroke-width="3"/>
+    <path d="M565 410h342v30H565z" fill="url(#blocks)" stroke="#0c110d" stroke-width="3"/>
+    <path d="M570 250h72v160h-72z" fill="url(#smallBlocks)" opacity="0.72"/>
+    <path d="M830 250h72v160h-72z" fill="url(#smallBlocks)" opacity="0.72"/>
+  </g>
+
+  <g opacity="0.82">
+    <path d="M84 438h410v42H84z" fill="url(#water)"/>
+    <path d="M84 445q22-10 44 0t44 0t44 0t44 0t44 0t44 0t44 0t44 0t44 0t44 0" fill="none" stroke="#64f3d7" stroke-opacity="0.42" stroke-width="3"/>
+    <path d="M580 430h322v25H580z" fill="url(#water)" opacity="0.52"/>
+  </g>
+
+  <g fill="none" stroke="#b58a45" stroke-opacity="0.38" stroke-width="3">
+    <path d="M34 140h22v22H34zM39 145l12 12m0-12l-12 12"/>
+    <path d="M522 140h22v22h-22zM527 145l12 12m0-12l-12 12"/>
+    <path d="M910 140h22v22h-22zM915 145l12 12m0-12l-12 12"/>
+    <path d="M34 420h22v22H34zM39 425l12 12m0-12l-12 12"/>
+    <path d="M522 420h22v22h-22zM527 425l12 12m0-12l-12 12"/>
+    <path d="M910 420h22v22h-22zM915 425l12 12m0-12l-12 12"/>
+  </g>
+
+  <g fill="none" stroke-linecap="round">
+    <path d="M9 70q38 38 14 92t31 87t-20 110t27 132" stroke="#1e5a38" stroke-width="8"/>
+    <path d="M951 70q-38 38-14 92t-31 87t20 110t-27 132" stroke="#1e5a38" stroke-width="8"/>
+    <path d="M530 86q20 52-7 95t18 77" stroke="#247145" stroke-width="6"/>
+    <path d="M884 86q-20 52 7 95t-18 77" stroke="#247145" stroke-width="6"/>
+  </g>
+  <g fill="#2d7a48" stroke="#0e3b25" stroke-width="2">
+    <ellipse cx="22" cy="105" rx="18" ry="8" transform="rotate(32 22 105)"/>
+    <ellipse cx="47" cy="174" rx="17" ry="8" transform="rotate(-35 47 174)"/>
+    <ellipse cx="18" cy="260" rx="20" ry="9" transform="rotate(25 18 260)"/>
+    <ellipse cx="47" cy="358" rx="18" ry="8" transform="rotate(-28 47 358)"/>
+    <ellipse cx="938" cy="105" rx="18" ry="8" transform="rotate(-32 938 105)"/>
+    <ellipse cx="913" cy="174" rx="17" ry="8" transform="rotate(35 913 174)"/>
+    <ellipse cx="942" cy="260" rx="20" ry="9" transform="rotate(-25 942 260)"/>
+    <ellipse cx="913" cy="358" rx="18" ry="8" transform="rotate(28 913 358)"/>
+  </g>
+
+  <g fill="#123f2a" stroke="#082416" stroke-width="2">
+    <ellipse cx="40" cy="520" rx="62" ry="20"/>
+    <ellipse cx="110" cy="526" rx="75" ry="24"/>
+    <ellipse cx="850" cy="526" rx="75" ry="24"/>
+    <ellipse cx="930" cy="520" rx="62" ry="20"/>
+  </g>
+  <g fill="#256a3e" stroke="#0b321e" stroke-width="2">
+    <path d="M0 532q22-70 54-95q-2 50-18 95z"/>
+    <path d="M34 540q35-85 83-108q-14 64-43 108z"/>
+    <path d="M960 532q-22-70-54-95q2 50 18 95z"/>
+    <path d="M926 540q-35-85-83-108q14 64 43 108z"/>
+  </g>
+
+  <rect x="0" y="0" width="960" height="12" fill="url(#stoneGold)"/>
+  <rect x="0" y="528" width="960" height="12" fill="url(#stoneGold)"/>
+  <path d="M0 15h960M0 525h960" stroke="#d3a650" stroke-opacity="0.35" stroke-width="2"/>
+</svg>
