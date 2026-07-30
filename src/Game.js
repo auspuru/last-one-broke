@@ -1,4 +1,4 @@
-export default class Game {
+class Game {
   /**
    * Central runtime state for Project Emerald Quest.
    * This class intentionally stays framework-light so scenes and systems
@@ -96,3 +96,6 @@ export default class Game {
     };
   }
 }
+
+export const gameState = new Game();
+export default Game;
