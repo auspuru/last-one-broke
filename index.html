@@ -143,15 +143,32 @@
   <main id="game" aria-label="Emerald Quest game"></main>
 
   <script src="https://cdn.jsdelivr.net/npm/phaser@3.90.0/dist/phaser.min.js"></script>
-  <script type="module" src="./src/compat/PhaserGraphicsCompat.js"></script>
-  <script type="module" src="./src/audio/SoundManager.js"></script>
-  <script type="module" src="./src/main.js"></script>
-  <script type="module" src="./src/visual/ProductionPipeline.js"></script>
-  <script type="module" src="./src/feel/GameFeel.js"></script>
-  <script type="module" src="./src/visual/LandscapeSlice.js"></script>
-  <script type="module" src="./src/visual/ContainerOrderFix.js"></script>
-  <script type="module" src="./src/visual/TempleRebuild.js"></script>
-  <script type="module" src="./src/visual/TempleExpansion.js"></script>
+  <script>
+    (() => {
+      const Graphics = window.Phaser?.GameObjects?.Graphics;
+      const prototype = Graphics?.prototype;
+      if (!prototype || typeof prototype.quadraticBezierTo === 'function') return;
+
+      Object.defineProperty(prototype, 'quadraticBezierTo', {
+        configurable: true,
+        writable: true,
+        value(controlX, controlY, endX, endY) {
+          this.lineTo(controlX, controlY);
+          this.lineTo(endX, endY);
+          return this;
+        }
+      });
+    })();
+  </script>
+  <script type="module" src="./src/compat/PhaserGraphicsCompat.js?v=20260731-1217"></script>
+  <script type="module" src="./src/audio/SoundManager.js?v=20260731-1217"></script>
+  <script type="module" src="./src/main.js?v=20260731-1217"></script>
+  <script type="module" src="./src/visual/ProductionPipeline.js?v=20260731-1217"></script>
+  <script type="module" src="./src/feel/GameFeel.js?v=20260731-1217"></script>
+  <script type="module" src="./src/visual/LandscapeSlice.js?v=20260731-1217"></script>
+  <script type="module" src="./src/visual/ContainerOrderFix.js?v=20260731-1217"></script>
+  <script type="module" src="./src/visual/TempleRebuild.js?v=20260731-1217"></script>
+  <script type="module" src="./src/visual/TempleExpansion.js?v=20260731-1217"></script>
   <script>
     const rotatePrompt = document.getElementById('rotate-device');
     const playPortrait = document.getElementById('play-portrait');
